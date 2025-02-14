@@ -17,8 +17,29 @@ struct ContentView: View {
         }
     }
     @State private var showAlert = false
+    @Environment(\.verticalSizeClass) var sizeClass
     var body: some View {
         VStack {
+            if sizeClass != .compact {
+                VStack {
+                    headerContent
+                }
+            } else {
+                HStack {
+                    headerContent
+                }
+            }
+            TextEditor(text: $noteContents)
+                .padding()
+                .font(.system(size: fontSize))
+        }
+        .onAppear(perform: initView)
+        .alert( isPresented: $showAlert, content: {
+            Alert(title: Text("Your note has been stored"))
+        })
+    }
+    var headerContent: some View {
+        Group {
             Text("AlwaysNote")
                 .font(.system(size: 32, weight: .bold))
             HStack {
@@ -36,14 +57,7 @@ struct ContentView: View {
                 }
             }
             .padding()
-            TextEditor(text: $noteContents)
-                .padding()
-                .font(.system(size: fontSize))
         }
-        .onAppear(perform: initView)
-        .alert( isPresented: $showAlert, content: {
-            Alert(title: Text("Your note has been stored"))
-        })
     }
     func increaseFontSize() {
         fontSize = max(fontSize + 1, 24)
